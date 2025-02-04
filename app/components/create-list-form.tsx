@@ -24,7 +24,7 @@ export default function CreateListForm() {
         throw new Error('Form reset failed');
       }
     } catch (error) {
-      throw new Error('Error submitting form');
+      throw new Error(`Error submitting form: ${error}`);
     } finally {
       setLoading(false);
       await getLists();
