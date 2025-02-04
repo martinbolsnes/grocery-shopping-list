@@ -1,7 +1,5 @@
 import { Suspense } from 'react';
 import { auth } from '@/auth';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { ShareListDialog } from './components/share-list-dialog';
 import { getLists, createList } from './actions/list-actions';
 import { Skeleton } from '@/components/ui/skeleton';
