@@ -1,10 +1,9 @@
 import { Suspense } from 'react';
 import { auth } from '@/auth';
 import { ShareListDialog } from './components/share-list-dialog';
-import { getLists, createList } from './actions/list-actions';
+import { getLists } from './actions/list-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus } from 'lucide-react';
 import { InteractiveItemList } from './components/interactive-item-list';
 import {
   TooltipContent,
