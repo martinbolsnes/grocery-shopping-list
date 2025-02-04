@@ -4,7 +4,11 @@ import { useState, useTransition } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
-import { addItem, toggleItemCompletion } from '../actions/list-actions';
+import {
+  addItem,
+  deleteItem,
+  toggleItemCompletion,
+} from '../actions/list-actions';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from './LoadingSpinner';
 import { Plus } from 'lucide-react';
@@ -46,6 +50,23 @@ export function InteractiveItemList({
     });
   };
 
+  const handleDeleteItem = async (formData: FormData) => {
+    startTransition(async () => {
+      const itemId = formData.get('itemId') as string;
+
+      if (!itemId) {
+        console.error('Invalid request: itemId is required');
+        return;
+      }
+
+      const deletedItem = await deleteItem(formData);
+      setItems((prevItems) =>
+        prevItems.filter((item) => item.id !== deletedItem.id)
+      );
+      router.refresh();
+    });
+  };
+
   return (
     <div>
       <form action={handleAddItem} className='mb-4 flex'>
@@ -80,9 +101,17 @@ export function InteractiveItemList({
                 {item.name}
               </label>
             </div>
-            <Button variant='outline' size='icon' className='h-8 w-8'>
-              <Plus className='rotate-45' />
-            </Button>
+            <form action={handleDeleteItem}>
+              <input type='hidden' name='itemId' value={item.id} />
+              <Button
+                type='submit'
+                variant='outline'
+                size='icon'
+                className='h-8 w-8'
+              >
+                <Plus className='rotate-45' />
+              </Button>
+            </form>
           </li>
         ))}
       </ul>

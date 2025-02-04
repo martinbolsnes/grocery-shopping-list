@@ -164,3 +164,41 @@ export async function toggleItemCompletion(formData: FormData): Promise<Item> {
 
   return updatedItem;
 }
+
+export async function deleteItem(formData: FormData): Promise<Item> {
+  const session = await auth();
+  if (!session?.user) {
+    throw new Error('Unauthorized');
+  }
+
+  const itemId = formData.get('itemId') as string;
+
+  if (!itemId) {
+    throw new Error('Invalid request: itemId is required');
+  }
+
+  const item = await prisma.item.findUnique({
+    where: { id: itemId },
+    include: { list: { include: { sharedWith: true } } },
+  });
+
+  if (!item) {
+    throw new Error('Item not found');
+  }
+
+  if (
+    item.list.ownerId !== session.user.id &&
+    !item.list.sharedWith.some((user) => user.id === session.user?.id)
+  ) {
+    throw new Error('Unauthorized');
+  }
+
+  const deletedItem = await prisma.item.delete({
+    where: { id: itemId },
+  });
+
+  revalidatePath('/');
+  await pusher.trigger('grocery-shopping-lists', 'list-updated', {});
+
+  return deletedItem;
+}
