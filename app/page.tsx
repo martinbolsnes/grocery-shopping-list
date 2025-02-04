@@ -25,7 +25,7 @@ export default async function Home() {
     return (
       <div className='flex flex-col mx-auto justify-center items-center mt-8 p-8'>
         <h2 className='font-mono text-3xl'>LISTA</h2>
-        <p>Din eneste for app for dine lister</p>
+        <p>Din eneste app for dine lister</p>
         <div className='flex flex-col space-y-4 mt-8 justify-items-center'>
           <Card>
             <CardTitle className='flex justify-items-center text-lg p-6'>
