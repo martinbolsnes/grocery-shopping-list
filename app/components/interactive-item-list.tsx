@@ -28,7 +28,6 @@ export function InteractiveItemList({
   const router = useRouter();
 
   const handleAddItem = async (formData: FormData) => {
-    const name = formData.get('name') as string;
     startTransition(async () => {
       const newItem = await addItem(formData);
       setItems([...items, newItem]);
