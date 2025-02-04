@@ -7,7 +7,10 @@ export default async function Header() {
   const session = await auth();
   return (
     <div className='bg-background border-b border-border px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-10'>
-      <h1 className='font-mono text-xl'>Lista</h1>
+      <Link href='/'>
+        <h1 className='font-mono text-xl'>Lista</h1>
+      </Link>
+
       {session ? (
         <form
           action={async () => {
@@ -15,7 +18,7 @@ export default async function Header() {
             await signOut();
           }}
         >
-          <Button variant='outline' size='icon' type='submit'>
+          <Button variant='ghost' size='icon' type='submit'>
             <LogOut />
           </Button>
         </form>
