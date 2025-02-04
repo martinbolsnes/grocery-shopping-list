@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/tooltip';
 import { Tooltip } from '@radix-ui/react-tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import CreateListForm from './components/create-list-form';
 
 export default async function Home() {
   const session = await auth();
@@ -114,21 +115,5 @@ export default async function Home() {
         </Tabs>
       </div>
     </div>
-  );
-}
-
-function CreateListForm() {
-  return (
-    <form action={createList} className='mb-4 flex'>
-      <Input
-        type='text'
-        name='name'
-        placeholder='Ny liste'
-        className='mr-2 text-base'
-      />
-      <Button variant='secondary' size='icon' type='submit'>
-        <Plus className='h-4 w-4' />
-      </Button>
-    </form>
   );
 }
