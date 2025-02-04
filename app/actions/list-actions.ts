@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { pusher } from '@/lib/pusher';
+import { Item, List } from '@prisma/client';
 
 export async function getLists() {
   const session = await auth();
@@ -28,7 +29,7 @@ export async function getLists() {
   });
 }
 
-export async function createList(formData: FormData): Promise<any> {
+export async function createList(formData: FormData): Promise<List> {
   const session = await auth();
   if (!session?.user) {
     throw new Error('Unauthorized');
@@ -91,7 +92,7 @@ export async function shareList(listId: string, email: string) {
   return { message: 'List shared successfully' };
 }
 
-export async function addItem(formData: FormData): Promise<any> {
+export async function addItem(formData: FormData): Promise<Item> {
   const session = await auth();
   if (!session?.user) {
     throw new Error('Unauthorized');
@@ -129,7 +130,7 @@ export async function addItem(formData: FormData): Promise<any> {
   return item;
 }
 
-export async function toggleItemCompletion(formData: FormData): Promise<any> {
+export async function toggleItemCompletion(formData: FormData): Promise<Item> {
   const session = await auth();
   if (!session?.user) {
     throw new Error('Unauthorized');
