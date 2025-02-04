@@ -10,18 +10,18 @@ import {
 import { signIn } from '@/auth';
 
 export const metadata: Metadata = {
-  title: 'Login',
-  description: 'Login to your account',
+  title: 'Logg inn',
+  description: 'Logg inn med din bruker',
 };
 
 export default function LoginPage() {
   return (
-    <div className='container mx-auto flex min-h-screen'>
-      <Card className='w-full max-w-md border-none mt-8'>
+    <div className='container mx-auto flex min-h-screen justify-center'>
+      <Card className='w-full max-w-md border-none mt-8 bg-background'>
         <CardHeader className='space-y-1'>
           <CardTitle className='text-2xl font-bold'>Logg inn</CardTitle>
           <CardDescription>
-            Velg foretrukket innlogginsmetode.
+            Velg foretrukket innloggingsmetode.
             <br />
             Hvis dette er første gang du logger inn vil en bruker bli oprettet
             for deg.
@@ -35,7 +35,7 @@ export default function LoginPage() {
             }}
           >
             <Button className='w-full' type='submit'>
-              Logg inn med Google
+              Google
             </Button>
           </form>
           <form
@@ -45,7 +45,7 @@ export default function LoginPage() {
             }}
           >
             <Button variant='secondary' className='w-full' type='submit'>
-              Logg inn med Github
+              Github
             </Button>
           </form>
         </CardContent>
