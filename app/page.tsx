@@ -5,12 +5,6 @@ import { getLists } from './actions/list-actions';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { InteractiveItemList } from './components/interactive-item-list';
-import {
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
-import { Tooltip } from '@radix-ui/react-tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CreateListForm from './components/create-list-form';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
