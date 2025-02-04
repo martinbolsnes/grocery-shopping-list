@@ -13,14 +13,44 @@ import {
 import { Tooltip } from '@radix-ui/react-tooltip';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CreateListForm from './components/create-list-form';
+import { Card, CardContent, CardTitle } from '@/components/ui/card';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+import { FileText, Users } from 'lucide-react';
 
 export default async function Home() {
   const session = await auth();
 
   if (!session) {
     return (
-      <div className='flex mx-auto justify-center items-center mt-8'>
-        Logg inn for å se dine lister.
+      <div className='flex flex-col mx-auto justify-center items-center mt-8 p-8'>
+        <h2 className='font-mono text-3xl'>Lista</h2>
+        <p>Din eneste for app for dine lister</p>
+        <div className='flex flex-col space-y-4 mt-8 justify-items-center'>
+          <Card>
+            <CardTitle className='flex justify-items-center text-lg p-6'>
+              <FileText className='mr-2' />
+              Flere lister på en plass
+            </CardTitle>
+            <CardContent>
+              Lag flere lister for forskjellige gjøremål og ha de enkelt samlet
+              i en og samme app
+            </CardContent>
+          </Card>
+          <Card>
+            <CardTitle className='flex justify-items-center text-lg p-6'>
+              <Users className='mr-2' />
+              Del listene dine
+            </CardTitle>
+            <CardContent>
+              Inviter andre brukere til å bruke listene dine og ha full kontroll
+              på alle punkt
+            </CardContent>
+          </Card>
+          <Link href='/signin' className='w-full'>
+            <Button className='w-full'>Kom i gang</Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -28,9 +58,11 @@ export default async function Home() {
   const lists = await getLists();
 
   return (
-    <div className='container mx-auto p-4'>
+    <main className='flex flex-col container mx-auto p-4'>
       <Suspense fallback={<Skeleton className='h-4 w-[250px]' />}>
-        <CreateListForm />
+        <div className='flex mb-4 justify-start'>
+          <CreateListForm />
+        </div>
       </Suspense>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
         <Tabs defaultValue={lists[0]?.name}>
@@ -111,6 +143,6 @@ export default async function Home() {
           ))}
         </Tabs>
       </div>
-    </div>
+    </main>
   );
 }
