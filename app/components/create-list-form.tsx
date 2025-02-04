@@ -5,6 +5,7 @@ import { createList, getLists } from '../actions/list-actions';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 export default function CreateListForm() {
   const [loading, setLoading] = useState(false);
@@ -24,6 +25,10 @@ export default function CreateListForm() {
         throw new Error('Form reset failed');
       }
     } catch (error) {
+      toast({
+        title: 'Feil',
+        description: `Det skjedde en feil ved oprettelse av ny liste: ${error}`,
+      });
       throw new Error(`Error submitting form: ${error}`);
     } finally {
       setLoading(false);
@@ -32,7 +37,7 @@ export default function CreateListForm() {
   };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className='mb-4 flex'>
+    <form ref={formRef} onSubmit={handleSubmit} className='flex'>
       <Input
         type='text'
         name='name'
