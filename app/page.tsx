@@ -1,101 +1,134 @@
-import Image from "next/image";
+import { Suspense } from 'react';
+import { auth } from '@/auth';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { ShareListDialog } from './components/share-list-dialog';
+import { getLists, createList } from './actions/list-actions';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Plus } from 'lucide-react';
+import { InteractiveItemList } from './components/interactive-item-list';
+import {
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Tooltip } from '@radix-ui/react-tooltip';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+
+  if (!session) {
+    return (
+      <div className='flex mx-auto justify-center items-center mt-8'>
+        Logg inn for å se dine lister.
+      </div>
+    );
+  }
+
+  const lists = await getLists();
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+    <div className='container mx-auto p-4'>
+      <Suspense fallback={<Skeleton className='h-4 w-[250px]' />}>
+        <CreateListForm />
+      </Suspense>
+      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+        <Tabs defaultValue={lists[0]?.name}>
+          <TabsList>
+            {lists.map((list) => (
+              <TabsTrigger value={list.name} key={list.id}>
+                {list.name}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+          {lists.map((list) => (
+            <TabsContent value={list.name} key={list.id}>
+              <div className='flex items-center justify-between mb-2'>
+                <div className='flex items-center space-x-2'>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Avatar className='h-8 w-8'>
+                          <AvatarImage
+                            src={list.owner.image || ''}
+                            alt={list.owner.name || ''}
+                          />
+                          <AvatarFallback>
+                            {list.owner.name?.charAt(0) || 'O'}
+                          </AvatarFallback>
+                        </Avatar>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Owner: {list.owner.name || list.owner.email}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                  {list.sharedWith.length > 0 && (
+                    <div className='flex -space-x-2'>
+                      {list.sharedWith.map((user) => (
+                        <TooltipProvider key={user.id}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Avatar className='h-8 w-8 border-2 border-background'>
+                                <AvatarImage
+                                  src={user.image || ''}
+                                  alt={user.name || ''}
+                                />
+                                <AvatarFallback>
+                                  {user.name?.charAt(0) || 'U'}
+                                </AvatarFallback>
+                              </Avatar>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>Shared with: {user.name || user.email}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {list.owner.email === session.user?.email && (
+                  <ShareListDialog listId={list.id} />
+                )}
+              </div>
+              <Suspense
+                fallback={
+                  <div className='flex flex-col gap-2'>
+                    <Skeleton className='h-4 w-[150px]' />
+                    <Skeleton className='h-4 w-[150px]' />
+                    <Skeleton className='h-4 w-[150px]' />
+                    <Skeleton className='h-4 w-[150px]' />
+                  </div>
+                }
+              >
+                <InteractiveItemList
+                  listId={list.id}
+                  initialItems={list.items}
+                />
+              </Suspense>
+            </TabsContent>
+          ))}
+        </Tabs>
+      </div>
     </div>
+  );
+}
+
+function CreateListForm() {
+  return (
+    <form action={createList} className='mb-4 flex'>
+      <Input
+        type='text'
+        name='name'
+        placeholder='Ny liste'
+        className='mr-2 text-base'
+      />
+      <Button variant='secondary' size='icon' type='submit'>
+        <Plus className='h-4 w-4' />
+      </Button>
+    </form>
   );
 }
