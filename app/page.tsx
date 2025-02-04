@@ -17,6 +17,12 @@ import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { FileText, Users } from 'lucide-react';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import { Separator } from '@/components/ui/separator';
 
 export default async function Home() {
   const session = await auth();
@@ -24,7 +30,7 @@ export default async function Home() {
   if (!session) {
     return (
       <div className='flex flex-col mx-auto justify-center items-center mt-8 p-8'>
-        <h2 className='font-mono text-3xl'>Lista</h2>
+        <h2 className='font-mono text-3xl'>LISTA</h2>
         <p>Din eneste for app for dine lister</p>
         <div className='flex flex-col space-y-4 mt-8 justify-items-center'>
           <Card>
@@ -75,47 +81,44 @@ export default async function Home() {
           </TabsList>
           {lists.map((list) => (
             <TabsContent value={list.name} key={list.id}>
-              <div className='flex items-center justify-between mb-2'>
+              <div className='flex items-center justify-between mb-2 mt-4'>
                 <div className='flex items-center space-x-2'>
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Avatar className='h-8 w-8'>
-                          <AvatarImage
-                            src={list.owner.image || ''}
-                            alt={list.owner.name || ''}
-                          />
-                          <AvatarFallback>
-                            {list.owner.name?.charAt(0) || 'O'}
-                          </AvatarFallback>
-                        </Avatar>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>Owner: {list.owner.name || list.owner.email}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Avatar className='h-8 w-8'>
+                        <AvatarImage
+                          src={list.owner.image || ''}
+                          alt={list.owner.name || ''}
+                        />
+                        <AvatarFallback>
+                          {list.owner.name?.charAt(0) || 'O'}
+                        </AvatarFallback>
+                      </Avatar>
+                    </PopoverTrigger>
+                    <PopoverContent className='p-1 bg-primary text-foreground text-center'>
+                      <p>Eier: {list.owner.name || list.owner.email}</p>
+                    </PopoverContent>
+                  </Popover>
+
                   {list.sharedWith.length > 0 && (
                     <div className='flex -space-x-2'>
                       {list.sharedWith.map((user) => (
-                        <TooltipProvider key={user.id}>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <Avatar className='h-8 w-8 border-2 border-background'>
-                                <AvatarImage
-                                  src={user.image || ''}
-                                  alt={user.name || ''}
-                                />
-                                <AvatarFallback>
-                                  {user.name?.charAt(0) || 'U'}
-                                </AvatarFallback>
-                              </Avatar>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p>Shared with: {user.name || user.email}</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
+                        <Popover key={user.id}>
+                          <PopoverTrigger asChild>
+                            <Avatar className='h-8 w-8 border-2 border-background'>
+                              <AvatarImage
+                                src={user.image || ''}
+                                alt={user.name || ''}
+                              />
+                              <AvatarFallback>
+                                {user.name?.charAt(0) || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                          </PopoverTrigger>
+                          <PopoverContent className='p-1 bg-primary text-foreground text-center'>
+                            <p>Delt med: {user.name || user.email}</p>
+                          </PopoverContent>
+                        </Popover>
                       ))}
                     </div>
                   )}
@@ -124,6 +127,7 @@ export default async function Home() {
                   <ShareListDialog listId={list.id} />
                 )}
               </div>
+              <Separator className='mb-8 mt-4' />
               <Suspense
                 fallback={
                   <div className='flex flex-col gap-2'>
