@@ -7,6 +7,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { addItem, toggleItemCompletion } from '../actions/list-actions';
 import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from './LoadingSpinner';
+import { Plus } from 'lucide-react';
 
 interface Item {
   id: string;
@@ -61,9 +62,10 @@ export function InteractiveItemList({
       </form>
       <ul className='space-y-4'>
         {items.map((item) => (
-          <li key={item.id} className='flex items-center'>
+          <li key={item.id} className='flex items-center justify-between'>
             <div className='flex items-center space-x-2'>
               <Checkbox
+                className='h-7 w-7'
                 id={item.id}
                 checked={item.completed}
                 onCheckedChange={() => handleToggleCompletion(item.id)}
@@ -78,6 +80,9 @@ export function InteractiveItemList({
                 {item.name}
               </label>
             </div>
+            <Button variant='outline' size='icon' className='h-8 w-8'>
+              <Plus className='rotate-45' />
+            </Button>
           </li>
         ))}
       </ul>
