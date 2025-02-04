@@ -16,6 +16,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { shareList } from '../actions/list-actions';
 import { Share } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 interface ShareListDialogProps {
   listId: string;
@@ -25,6 +26,7 @@ export function ShareListDialog({ listId }: ShareListDialogProps) {
   const [email, setEmail] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleShare = async () => {
     try {
@@ -33,9 +35,17 @@ export function ShareListDialog({ listId }: ShareListDialogProps) {
       setEmail('');
       router.refresh();
     } catch (error) {
-      console.error('Failed to share list:', error);
-      // Handle error (e.g., show error message to user)
+      toast({
+        title: 'Feil ved deling av liste',
+        description: `${error}`,
+        variant: 'destructive',
+      });
+      throw new Error(`Failed to share list: ${error}`);
     }
+    toast({
+      title: 'Listen er delt',
+      description: 'Personen du vil dele med kan nå se listen din',
+    });
   };
 
   return (
@@ -50,6 +60,8 @@ export function ShareListDialog({ listId }: ShareListDialogProps) {
           <DialogTitle>Del listen</DialogTitle>
           <DialogDescription>
             Skriv inn eposten til den du vil dele listen med.
+            <br />
+            PS: Personen må ha en registrert konto
           </DialogDescription>
         </DialogHeader>
         <div className='grid gap-4 py-4'>
@@ -61,7 +73,7 @@ export function ShareListDialog({ listId }: ShareListDialogProps) {
               id='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className='col-span-3'
+              className='col-span-3 text-base'
             />
           </div>
         </div>
