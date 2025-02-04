@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Plus } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { LoadingSpinner } from './LoadingSpinner';
 
 export default function CreateListForm() {
   const [loading, setLoading] = useState(false);
@@ -45,7 +46,7 @@ export default function CreateListForm() {
         className='mr-2 text-base'
       />
       <Button variant='secondary' size='icon' type='submit' disabled={loading}>
-        <Plus className='h-4 w-4' />
+        {loading ? <LoadingSpinner /> : <Plus className='h-4 w-4' />}
       </Button>
     </form>
   );
