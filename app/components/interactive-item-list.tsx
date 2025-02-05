@@ -40,17 +40,23 @@ export function InteractiveItemList({
 
   const handleAddItem = async (formData: FormData) => {
     const name = formData.get('name') as string;
+    const tempId = `temp-${Date.now()}`;
+
     const optimisticItem = {
-      id: Date.now().toString(),
+      id: tempId,
       name,
       completed: false,
     };
 
-    addOptimisticItem(optimisticItem);
+    setItems((prevItems) => [...prevItems, optimisticItem]);
 
     startTransition(async () => {
       const newItem = await addItem(formData);
-      setItems((prevItems) => [...prevItems, newItem]);
+
+      setItems((prevItems) =>
+        prevItems.map((item) => (item.id === tempId ? newItem : item))
+      );
+
       router.refresh();
     });
   };
