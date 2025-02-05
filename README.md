@@ -1,6 +1,6 @@
 # List App
 
-A Next.js application for managing grocery lists with Prisma, Neon Database, and Pusher for real-time updates and sharing functionality.
+A Next.js application for managing grocery lists with Prisma Postgres, and Pusher for real-time updates and sharing functionality.
 
 ## 🚀 Features
 
@@ -13,7 +13,7 @@ A Next.js application for managing grocery lists with Prisma, Neon Database, and
 ## 🛠️ Tech Stack
 
 - Frontend: Next.js (App Router & Server Actions)
-- Backend: Prisma ORM with Neon Database
+- Backend: Prisma Postgres
 - Real-Time Updates: Pusher
 - Authentication: Auth.js
 - Deployment: Vercel
@@ -38,7 +38,7 @@ npm install
 Create a .env file in the root directory and add the following:
 
 ```bash
-DATABASE_URL="postgresql://your-neon-db-url"
+DATABASE_URL="postgresql://your-prisma-postgres-db-url"
 NEXTAUTH_SECRET="your-auth-secret"
 PUSHER_APP_ID="your-pusher-app-id"
 PUSHER_KEY="your-pusher-key"
