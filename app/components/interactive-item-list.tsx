@@ -33,10 +33,10 @@ export function InteractiveItemList({
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
-  const [optimisticItems, addOptimisticItem] = useOptimistic(
-    items,
-    (state, newItem: Item) => [...state, newItem]
-  );
+  const [optimisticItems] = useOptimistic(items, (state, newItem: Item) => [
+    ...state,
+    newItem,
+  ]);
 
   const handleAddItem = async (formData: FormData) => {
     const name = formData.get('name') as string;
