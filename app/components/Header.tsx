@@ -9,7 +9,7 @@ export default async function Header() {
   return (
     <div className='bg-primary border-b border-border px-4 md:px-8 py-4 flex items-center justify-between sticky top-0 z-10'>
       <Link href='/'>
-        <h1 className='font-mono text-2xl'>LISTA</h1>
+        <h1 className='font-mono text-3xl text-background'>LISTA</h1>
       </Link>
 
       {session ? (
@@ -31,7 +31,7 @@ export default async function Header() {
             }}
           >
             <Button variant='ghost' size='icon' type='submit'>
-              <LogOut className='ml-2' />
+              <LogOut />
             </Button>
           </form>
         </div>
