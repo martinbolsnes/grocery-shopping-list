@@ -11,6 +11,7 @@ const config: Config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-cabin)'],
+        serif: ['var(--font-fira)'],
         mono: ['var(--font-shrikhand)'],
       },
       colors: {
