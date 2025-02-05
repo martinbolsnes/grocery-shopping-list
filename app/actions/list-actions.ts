@@ -4,43 +4,36 @@ import { revalidatePath } from 'next/cache';
 import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { pusher } from '@/lib/pusher';
-import { Item, List } from '@prisma/client';
+import type { Item, List } from '@prisma/client';
+import { authorizeUser } from './auth-actions';
 
 export async function getLists() {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('Unauthorized');
-  }
+  const user = await authorizeUser();
 
   return prisma.list.findMany({
     where: {
-      OR: [
-        { ownerId: session.user.id },
-        { sharedWith: { some: { id: session.user.id } } },
-      ],
+      OR: [{ ownerId: user.id }, { sharedWith: { some: { id: user.id } } }],
     },
-    include: {
-      items: true,
-      owner: { select: { name: true, email: true, image: true } },
+    select: {
+      id: true,
+      name: true,
+      items: { select: { id: true, name: true, completed: true } },
+      owner: { select: { id: true, name: true, email: true, image: true } },
       sharedWith: {
-        select: { name: true, email: true, id: true, image: true },
+        select: { id: true, name: true, email: true, image: true },
       },
     },
   });
 }
 
 export async function createList(formData: FormData): Promise<List> {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('Unauthorized');
-  }
-
+  const user = await authorizeUser();
   const name = formData.get('name') as string;
 
   const list = await prisma.list.create({
     data: {
       name,
-      owner: { connect: { id: session.user.id } },
+      owner: { connect: { id: user.id } },
     },
   });
 
@@ -51,39 +44,35 @@ export async function createList(formData: FormData): Promise<List> {
 }
 
 export async function shareList(listId: string, email: string) {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('Unauthorized');
-  }
+  const user = await authorizeUser();
 
-  const list = await prisma.list.findUnique({
-    where: { id: listId },
-    include: { owner: true },
-  });
+  const result = await prisma.$transaction(async (prisma) => {
+    const list = await prisma.list.findUnique({
+      where: { id: listId },
+      select: { ownerId: true },
+    });
 
-  if (!list) {
-    throw new Error('List not found');
-  }
+    if (!list || list.ownerId !== user.id) {
+      throw new Error('Unauthorized or List not found');
+    }
 
-  if (list.ownerId !== session.user.id) {
-    throw new Error('Unauthorized');
-  }
+    const userToShare = await prisma.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
 
-  const userToShare = await prisma.user.findUnique({
-    where: { email },
-  });
+    if (!userToShare) {
+      throw new Error('User not found');
+    }
 
-  if (!userToShare) {
-    throw new Error('User not found');
-  }
-
-  await prisma.list.update({
-    where: { id: listId },
-    data: {
-      sharedWith: {
-        connect: { id: userToShare.id },
+    return prisma.list.update({
+      where: { id: listId },
+      data: {
+        sharedWith: {
+          connect: { id: userToShare.id },
+        },
       },
-    },
+    });
   });
 
   revalidatePath('/');
@@ -93,109 +82,78 @@ export async function shareList(listId: string, email: string) {
 }
 
 export async function addItem(formData: FormData): Promise<Item> {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('Unauthorized');
-  }
-
+  const user = await authorizeUser();
   const listId = formData.get('listId') as string;
   const name = formData.get('name') as string;
-
-  const list = await prisma.list.findUnique({
-    where: { id: listId },
-    include: { sharedWith: true },
-  });
-
-  if (!list) {
-    throw new Error('List not found');
-  }
-
-  if (
-    list.ownerId !== session.user.id &&
-    !list.sharedWith.some((user) => user.id === session.user?.id)
-  ) {
-    throw new Error('Unauthorized');
-  }
 
   const item = await prisma.item.create({
     data: {
       name,
-      list: { connect: { id: listId } },
+      list: {
+        connect: {
+          id: listId,
+          OR: [{ ownerId: user.id }, { sharedWith: { some: { id: user.id } } }],
+        },
+      },
     },
   });
 
-  revalidatePath('/');
-  await pusher.trigger('grocery-shopping-lists', 'list-updated', {});
+  revalidatePath(`/lists/${listId}`);
+  await pusher.trigger('grocery-shopping-lists', 'list-updated', { listId });
 
   return item;
 }
 
 export async function toggleItemCompletion(formData: FormData): Promise<Item> {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('Unauthorized');
-  }
-
+  const user = await authorizeUser();
   const itemId = formData.get('itemId') as string;
 
   const item = await prisma.item.findUnique({
-    where: { id: itemId },
-    include: { list: { include: { sharedWith: true } } },
+    where: {
+      id: itemId,
+      list: {
+        OR: [{ ownerId: user.id }, { sharedWith: { some: { id: user.id } } }],
+      },
+    },
+    select: { completed: true, listId: true, id: true },
   });
 
-  if (!item) {
-    throw new Error('Item not found');
-  }
-
-  if (
-    item.list.ownerId !== session.user.id &&
-    !item.list.sharedWith.some((user) => user.id === session.user?.id)
-  ) {
-    throw new Error('Unauthorized');
-  }
+  if (!item) throw new Error('Unauthorized or Item not found');
 
   const updatedItem = await prisma.item.update({
     where: { id: itemId },
     data: { completed: !item.completed },
+    include: { list: true },
   });
 
-  revalidatePath('/');
-  await pusher.trigger('grocery-shopping-lists', 'list-updated', {});
+  revalidatePath(`/lists/${updatedItem.list.id}`);
+  await pusher.trigger('grocery-shopping-lists', 'list-updated', {
+    listId: updatedItem.list.id,
+  });
 
   return updatedItem;
 }
 
 export async function deleteItem(formData: FormData): Promise<Item> {
-  const session = await auth();
-  if (!session?.user) {
-    throw new Error('Unauthorized');
-  }
-
+  const user = await authorizeUser();
   const itemId = formData.get('itemId') as string;
 
   if (!itemId) {
     throw new Error('Invalid request: itemId is required');
   }
 
-  const item = await prisma.item.findUnique({
-    where: { id: itemId },
-    include: { list: { include: { sharedWith: true } } },
-  });
-
-  if (!item) {
-    throw new Error('Item not found');
-  }
-
-  if (
-    item.list.ownerId !== session.user.id &&
-    !item.list.sharedWith.some((user) => user.id === session.user?.id)
-  ) {
-    throw new Error('Unauthorized');
-  }
-
   const deletedItem = await prisma.item.delete({
-    where: { id: itemId },
+    where: {
+      id: itemId,
+      list: {
+        OR: [{ ownerId: user.id }, { sharedWith: { some: { id: user.id } } }],
+      },
+    },
   });
+
+  if (!deletedItem) {
+    throw new Error('Unauthorized or Item not found');
+  }
 
   revalidatePath('/');
   await pusher.trigger('grocery-shopping-lists', 'list-updated', {});
