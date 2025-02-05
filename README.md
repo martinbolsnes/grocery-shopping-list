@@ -4,19 +4,19 @@ A Next.js application for managing grocery lists with Prisma, Neon Database, and
 
 ## 🚀 Features
 
-✅ User Authentication (Session-based authentication using auth.js)
-✅ Create & Manage Lists (CRUD operations with Prisma)
-✅ Share Lists (Invite others via email to collaborate on lists)
-✅ Real-Time Updates (Pusher WebSockets for instant list updates)
-✅ Prisma Accelerate (Optimized database queries with caching)
+- ✅ User Authentication (Session-based authentication using auth.js)
+- ✅ Create & Manage Lists (CRUD operations with Prisma)
+- ✅ Share Lists (Invite others via email to collaborate on lists)
+- ✅ Real-Time Updates (Pusher WebSockets for instant list updates)
+- ✅ Prisma Accelerate (Optimized database queries with caching)
 
 ## 🛠️ Tech Stack
 
-Frontend: Next.js (App Router & Server Actions)
-Backend: Prisma ORM with Neon Database
-Real-Time Updates: Pusher
-Authentication: Auth.js
-Deployment: Vercel
+- Frontend: Next.js (App Router & Server Actions)
+- Backend: Prisma ORM with Neon Database
+- Real-Time Updates: Pusher
+- Authentication: Auth.js
+- Deployment: Vercel
 
 ## 📦 Installation & Setup
 
