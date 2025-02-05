@@ -66,7 +66,7 @@ export default function LoginPage() {
           </Button>
           <Button
             variant='secondary'
-            className='w-full'
+            className='w-full font-sans font-medium'
             onClick={() => handleSignIn('github')}
             disabled={isGithubLoading}
           >
