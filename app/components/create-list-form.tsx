@@ -43,10 +43,10 @@ export default function CreateListForm() {
         type='text'
         name='name'
         placeholder='Ny liste'
-        className='mr-2 text-base'
+        className='mr-2 text-base font-serif'
       />
-      <Button variant='secondary' size='icon' type='submit' disabled={loading}>
-        {loading ? <LoadingSpinner /> : <Plus className='h-4 w-4' />}
+      <Button variant='secondary' type='submit' disabled={loading}>
+        {loading ? <LoadingSpinner /> : <Plus />}
       </Button>
     </form>
   );
