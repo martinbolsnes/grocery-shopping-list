@@ -56,29 +56,32 @@ export function ShareListDialog({ listId }: ShareListDialogProps) {
         </Button>
       </DialogTrigger>
       <DialogContent className='sm:max-w-[425px]'>
-        <DialogHeader>
-          <DialogTitle>Del listen</DialogTitle>
-          <DialogDescription>
+        <DialogHeader className='flex flex-col text-left'>
+          <DialogTitle className='font-sans font-bold'>Del listen</DialogTitle>
+          <DialogDescription className='font-serif'>
             Skriv inn eposten til den du vil dele listen med.
             <br />
             PS: Personen må ha en registrert konto
           </DialogDescription>
         </DialogHeader>
-        <div className='grid gap-4 py-4'>
-          <div className='grid grid-cols-4 items-center gap-4'>
-            <Label htmlFor='email' className='text-right'>
+        <div className='flex flex-col gap-2'>
+          <div className='flex flex-col gap-2'>
+            <Label htmlFor='email' className='text-left font-serif'>
               Epost
             </Label>
             <Input
               id='email'
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className='col-span-3 text-base'
+              className='col-span-3 text-base font-serif'
+              placeholder='Epost'
             />
           </div>
         </div>
         <DialogFooter>
-          <Button onClick={handleShare}>Del</Button>
+          <Button onClick={handleShare} className='font-sans font-bold'>
+            Del
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
