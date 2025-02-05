@@ -25,30 +25,34 @@ export default async function Home() {
     return (
       <div className='flex flex-col mx-auto justify-center items-center mt-8 p-8'>
         <h2 className='font-mono text-3xl'>LISTA</h2>
-        <p>Din eneste app for dine lister</p>
+        <p className='font-sans font-semibold'>
+          Din eneste app for dine lister
+        </p>
         <div className='flex flex-col space-y-4 mt-8 justify-items-center'>
           <Card>
-            <CardTitle className='flex justify-items-center text-lg p-6'>
+            <CardTitle className='flex justify-items-center font-sans font-semibold text-lg p-6'>
               <FileText className='mr-2' />
               Flere lister på en plass
             </CardTitle>
-            <CardContent>
+            <CardContent className='font-serif'>
               Lag flere lister for forskjellige gjøremål og ha de enkelt samlet
               i en og samme app
             </CardContent>
           </Card>
           <Card>
-            <CardTitle className='flex justify-items-center text-lg p-6'>
+            <CardTitle className='flex justify-items-center font-sans font-semibold text-lg p-6'>
               <Users className='mr-2' />
               Del listene dine
             </CardTitle>
-            <CardContent>
+            <CardContent className='font-serif'>
               Inviter andre brukere til å bruke listene dine og ha full kontroll
               på alle punkt
             </CardContent>
           </Card>
           <Link href='/signin' className='w-full'>
-            <Button className='w-full'>Kom i gang</Button>
+            <Button className='w-full font-sans font-semibold'>
+              Kom i gang
+            </Button>
           </Link>
         </div>
       </div>
@@ -68,7 +72,11 @@ export default async function Home() {
         <Tabs defaultValue={lists[0]?.name}>
           <TabsList>
             {lists.map((list) => (
-              <TabsTrigger value={list.name} key={list.id}>
+              <TabsTrigger
+                value={list.name}
+                key={list.id}
+                className='font-sans font-bold'
+              >
                 {list.name}
               </TabsTrigger>
             ))}
@@ -89,7 +97,7 @@ export default async function Home() {
                         </AvatarFallback>
                       </Avatar>
                     </PopoverTrigger>
-                    <PopoverContent className='p-1 bg-primary text-foreground text-center'>
+                    <PopoverContent className='p-1 bg-primary font-serif text-foreground text-center'>
                       <p>Eier: {list.owner.name || list.owner.email}</p>
                     </PopoverContent>
                   </Popover>
@@ -109,7 +117,7 @@ export default async function Home() {
                               </AvatarFallback>
                             </Avatar>
                           </PopoverTrigger>
-                          <PopoverContent className='p-1 bg-primary text-foreground text-center'>
+                          <PopoverContent className='p-1 bg-primary font-serif text-foreground text-center'>
                             <p>Delt med: {user.name || user.email}</p>
                           </PopoverContent>
                         </Popover>
