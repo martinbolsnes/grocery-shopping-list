@@ -1,7 +1,6 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
-import { auth } from '@/auth';
 import prisma from '@/lib/prisma';
 import { pusher } from '@/lib/pusher';
 import type { Item, List } from '@prisma/client';
@@ -78,7 +77,7 @@ export async function shareList(listId: string, email: string) {
   revalidatePath('/');
   await pusher.trigger('grocery-shopping-lists', 'list-updated', {});
 
-  return { message: 'List shared successfully' };
+  return { result, message: 'List shared successfully' };
 }
 
 export async function addItem(formData: FormData): Promise<Item> {
