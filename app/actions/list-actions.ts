@@ -85,15 +85,22 @@ export async function addItem(formData: FormData): Promise<Item> {
   const listId = formData.get('listId') as string;
   const name = formData.get('name') as string;
 
+  const list = await prisma.list.findUnique({
+    where: { id: listId },
+    select: { ownerId: true, sharedWith: { select: { id: true } } },
+  });
+
+  if (
+    !list ||
+    (list.ownerId !== user.id && !list.sharedWith.some((u) => u.id === user.id))
+  ) {
+    throw new Error('Unauthorized');
+  }
+
   const item = await prisma.item.create({
     data: {
       name,
-      list: {
-        connect: {
-          id: listId,
-          OR: [{ ownerId: user.id }, { sharedWith: { some: { id: user.id } } }],
-        },
-      },
+      list: { connect: { id: listId } },
     },
   });
 
