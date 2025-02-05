@@ -1,5 +1,9 @@
 import type { Metadata } from 'next';
-import { Shrikhand, Cabin_Condensed } from 'next/font/google';
+import {
+  Shrikhand,
+  Cabin_Condensed,
+  Fira_Sans_Condensed,
+} from 'next/font/google';
 import './globals.css';
 import { SessionProvider } from 'next-auth/react';
 import Header from './components/Header';
@@ -16,6 +20,12 @@ const cabin = Cabin_Condensed({
   variable: '--font-cabin',
 });
 
+const fira = Fira_Sans_Condensed({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-fira',
+});
+
 export const metadata: Metadata = {
   title: 'Lista',
   description: 'Din eneste for app for dine lister',
@@ -28,7 +38,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`${shrikhand.variable} ${cabin.className} antialiased`}>
+      <body
+        className={`${shrikhand.variable} ${cabin.variable} ${fira.variable} antialiased`}
+      >
         <SessionProvider>
           <Header />
           {children}
