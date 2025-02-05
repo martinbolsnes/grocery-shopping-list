@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useOptimistic, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -9,9 +10,9 @@ import {
   deleteItem,
   toggleItemCompletion,
 } from '../actions/list-actions';
-import { useRouter } from 'next/navigation';
 import { LoadingSpinner } from './LoadingSpinner';
 import { Plus } from 'lucide-react';
+import { useDebouncedCallback } from 'use-debounce';
 
 interface Item {
   id: string;
@@ -32,37 +33,64 @@ export function InteractiveItemList({
   const [isPending, startTransition] = useTransition();
   const router = useRouter();
 
+  const [optimisticItems, addOptimisticItem] = useOptimistic(
+    items,
+    (state, newItem: Item) => [...state, newItem]
+  );
+
   const handleAddItem = async (formData: FormData) => {
+    const name = formData.get('name') as string;
+    const optimisticItem = {
+      id: Date.now().toString(),
+      name,
+      completed: false,
+    };
+
+    addOptimisticItem(optimisticItem);
+
     startTransition(async () => {
       const newItem = await addItem(formData);
-      setItems([...items, newItem]);
+      setItems((prevItems) => [...prevItems, newItem]);
       router.refresh();
     });
   };
 
-  const handleToggleCompletion = async (itemId: string) => {
+  const debouncedToggleCompletion = useDebouncedCallback((itemId: string) => {
     const formData = new FormData();
     formData.append('itemId', itemId);
     startTransition(async () => {
       const updatedItem = await toggleItemCompletion(formData);
-      setItems(items.map((item) => (item.id === itemId ? updatedItem : item)));
+      setItems((prevItems) =>
+        prevItems.map((item) => (item.id === itemId ? updatedItem : item))
+      );
       router.refresh();
     });
-  };
+  }, 300);
+
+  const handleToggleCompletion = useCallback(
+    (itemId: string) => {
+      setItems((prevItems) =>
+        prevItems.map((item) =>
+          item.id === itemId ? { ...item, completed: !item.completed } : item
+        )
+      );
+      debouncedToggleCompletion(itemId);
+    },
+    [debouncedToggleCompletion]
+  );
 
   const handleDeleteItem = async (formData: FormData) => {
+    const itemId = formData.get('itemId') as string;
+
+    if (!itemId) {
+      console.error('Invalid request: itemId is required');
+      return;
+    }
+
+    setItems((prevItems) => prevItems.filter((item) => item.id !== itemId));
+
     startTransition(async () => {
-      const itemId = formData.get('itemId') as string;
-
-      if (!itemId) {
-        console.error('Invalid request: itemId is required');
-        return;
-      }
-
-      const deletedItem = await deleteItem(formData);
-      setItems((prevItems) =>
-        prevItems.filter((item) => item.id !== deletedItem.id)
-      );
+      await deleteItem(formData);
       router.refresh();
     });
   };
@@ -75,15 +103,23 @@ export function InteractiveItemList({
           type='text'
           name='name'
           placeholder='Ny ting'
-          className='mr-2 text-base'
+          className='mr-2 text-base font-serif'
         />
-        <Button type='submit' variant='default' disabled={isPending}>
+        <Button
+          type='submit'
+          variant='default'
+          disabled={isPending}
+          className='font-serif'
+        >
           {isPending ? <LoadingSpinner /> : 'Legg til'}
         </Button>
       </form>
       <ul className='space-y-4'>
-        {items.map((item) => (
-          <li key={item.id} className='flex items-center justify-between'>
+        {optimisticItems.map((item) => (
+          <li
+            key={item.id}
+            className='flex items-center justify-between font-sans font-bold'
+          >
             <div className='flex items-center space-x-2'>
               <Checkbox
                 className='h-7 w-7'
