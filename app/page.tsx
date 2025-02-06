@@ -1,22 +1,12 @@
 import { Suspense } from 'react';
 import { auth } from '@/auth';
-import { ShareListDialog } from './components/share-list-dialog';
 import { getLists } from './actions/list-actions';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { InteractiveItemList } from './components/interactive-item-list';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import CreateListForm from './components/create-list-form';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { FileText, Users } from 'lucide-react';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { Separator } from '@/components/ui/separator';
 import { ScrollableTabs } from './components/ScrollableTabs';
 
 export default async function Home() {
