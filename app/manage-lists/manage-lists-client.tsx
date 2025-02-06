@@ -22,6 +22,7 @@ import {
 import { updateListName, deleteList } from '../actions/list-actions';
 import { toast } from '@/hooks/use-toast';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { LoadingSpinner } from '../components/LoadingSpinner';
 
 interface List {
   id: string;
@@ -46,6 +47,7 @@ export function ManageListsClient({
   const [newName, setNewName] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [listToDelete, setListToDelete] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const handleEdit = (listId: string, currentName: string) => {
     setEditingList(listId);
@@ -53,9 +55,11 @@ export function ManageListsClient({
   };
 
   const handleSave = async (listId: string) => {
+    setLoading(true);
     try {
       await updateListName(listId, newName);
       setEditingList(null);
+      setLoading(false);
       toast({
         title: 'Lagret',
         description: 'Nytt navn på listen er lagret',
@@ -76,11 +80,13 @@ export function ManageListsClient({
   };
 
   const handleDeleteConfirm = async () => {
+    setLoading(true);
     if (listToDelete) {
       try {
         await deleteList(listToDelete);
         setDeleteDialogOpen(false);
         setListToDelete(null);
+        setLoading(false);
         toast({
           title: 'Slettet',
           description: 'Listen er slettet',
@@ -135,7 +141,7 @@ export function ManageListsClient({
                       className='font-serif'
                       onClick={() => handleSave(list.id)}
                     >
-                      Lagre
+                      {loading ? <LoadingSpinner /> : 'Lagre'}
                     </Button>
                   ) : (
                     <Button
@@ -169,7 +175,7 @@ export function ManageListsClient({
               permanent
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter className='flex flex-col space-y-2'>
+          <DialogFooter className='flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-x-2 sm:space-y-0'>
             <Button
               className='font-serif'
               variant='outline'
@@ -182,7 +188,7 @@ export function ManageListsClient({
               variant='destructive'
               onClick={handleDeleteConfirm}
             >
-              Slett
+              {loading ? <LoadingSpinner /> : 'Slett'}
             </Button>
           </DialogFooter>
         </DialogContent>
