@@ -132,14 +132,14 @@ export function ManageListsClient({
                 <>
                   {editingList === list.id ? (
                     <Button
-                      className='font-sans'
+                      className='font-serif'
                       onClick={() => handleSave(list.id)}
                     >
                       Lagre
                     </Button>
                   ) : (
                     <Button
-                      className='font-sans'
+                      className='font-serif'
                       variant='secondary'
                       onClick={() => handleEdit(list.id, list.name)}
                     >
@@ -147,7 +147,7 @@ export function ManageListsClient({
                     </Button>
                   )}
                   <Button
-                    className='font-sans'
+                    className='font-serif'
                     variant='destructive'
                     onClick={() => handleDeleteClick(list.id)}
                   >
@@ -171,14 +171,14 @@ export function ManageListsClient({
           </DialogHeader>
           <DialogFooter className='flex flex-col space-y-2'>
             <Button
-              className='font-sans'
+              className='font-serif'
               variant='outline'
               onClick={() => setDeleteDialogOpen(false)}
             >
               Avbryt
             </Button>
             <Button
-              className='font-sans'
+              className='font-serif'
               variant='destructive'
               onClick={handleDeleteConfirm}
             >

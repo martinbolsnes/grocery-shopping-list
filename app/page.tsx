@@ -58,7 +58,9 @@ export default async function Home() {
         <div className='flex mb-4 justify-between'>
           <CreateListForm />
           <Link href='/manage-lists'>
-            <Button variant='outline'>Endre lister</Button>
+            <Button className='font-serif' variant='outline'>
+              Endre lister
+            </Button>
           </Link>
         </div>
       </Suspense>
