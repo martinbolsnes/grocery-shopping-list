@@ -166,3 +166,62 @@ export async function deleteItem(formData: FormData): Promise<Item> {
 
   return deletedItem;
 }
+
+export async function updateListName(listId: string, newName: string) {
+  const user = await authorizeUser();
+  if (!user) {
+    throw new Error('Unauthorized');
+  }
+
+  const list = await prisma.list.findUnique({
+    where: { id: listId },
+    include: { owner: true },
+  });
+
+  if (!list) {
+    throw new Error('List not found');
+  }
+
+  if (list.ownerId !== user.id) {
+    throw new Error('Unauthorized');
+  }
+
+  await prisma.list.update({
+    where: { id: listId },
+    data: { name: newName },
+  });
+
+  revalidatePath('/manage-lists');
+  await pusher.trigger('grocery-shopping-lists', 'list-updated', {});
+
+  return { message: 'List name updated successfully' };
+}
+
+export async function deleteList(listId: string) {
+  const user = await authorizeUser();
+  if (!user) {
+    throw new Error('Unauthorized');
+  }
+
+  const list = await prisma.list.findUnique({
+    where: { id: listId },
+    include: { owner: true },
+  });
+
+  if (!list) {
+    throw new Error('List not found');
+  }
+
+  if (list.ownerId !== user.id) {
+    throw new Error('Unauthorized');
+  }
+
+  await prisma.list.delete({
+    where: { id: listId },
+  });
+
+  revalidatePath('/manage-lists');
+  await pusher.trigger('grocery-shopping-lists', 'list-updated', {});
+
+  return { message: 'List deleted successfully' };
+}
