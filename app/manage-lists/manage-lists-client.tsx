@@ -63,7 +63,7 @@ export function ManageListsClient({
     } catch (error) {
       toast({
         title: 'Feil',
-        description: 'En feil skjedde ved oppdatering av listen',
+        description: `En feil skjedde ved oppdatering av listen ${error}`,
         variant: 'destructive',
       });
     }
@@ -87,7 +87,7 @@ export function ManageListsClient({
       } catch (error) {
         toast({
           title: 'Feil',
-          description: 'Klarte ikke slette listen',
+          description: `Klarte ikke slette listen ${error}`,
           variant: 'destructive',
         });
       }
