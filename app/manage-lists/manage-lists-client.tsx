@@ -89,7 +89,7 @@ export function ManageListsClient({
         toast({
           title: 'Feil',
           description:
-            'Klarte ikke slette listen. Sjekk at listen er tom før du sletter',
+            'Klarte ikke slette listen. Sjekk at listen er tom før du sletter og at du er eier av listen',
           variant: 'destructive',
         });
         throw new Error(`Error deleting form: ${error}`);
@@ -133,7 +133,10 @@ export function ManageListsClient({
                   {editingList === list.id ? (
                     <Button onClick={() => handleSave(list.id)}>Lagre</Button>
                   ) : (
-                    <Button onClick={() => handleEdit(list.id, list.name)}>
+                    <Button
+                      variant='secondary'
+                      onClick={() => handleEdit(list.id, list.name)}
+                    >
                       Endre navn
                     </Button>
                   )}
