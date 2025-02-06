@@ -103,7 +103,7 @@ export function ManageListsClient({
         {lists.map((list) => (
           <Card key={list.id}>
             <CardHeader>
-              <CardTitle>{list.name}</CardTitle>
+              <CardTitle className='font-sans'>{list.name}</CardTitle>
             </CardHeader>
             <CardContent>
               {editingList === list.id ? (
@@ -114,7 +114,7 @@ export function ManageListsClient({
                 />
               ) : (
                 <div className='flex items-center space-x-2'>
-                  <p>Eier:</p>
+                  <p className='font-serif'>Eier</p>
                   <Avatar className='h-8 w-8'>
                     <AvatarImage
                       src={list.owner.image || ''}
@@ -131,9 +131,15 @@ export function ManageListsClient({
               {list.owner.email === session.user?.email && (
                 <>
                   {editingList === list.id ? (
-                    <Button onClick={() => handleSave(list.id)}>Lagre</Button>
+                    <Button
+                      className='font-sans'
+                      onClick={() => handleSave(list.id)}
+                    >
+                      Lagre
+                    </Button>
                   ) : (
                     <Button
+                      className='font-sans'
                       variant='secondary'
                       onClick={() => handleEdit(list.id, list.name)}
                     >
@@ -141,6 +147,7 @@ export function ManageListsClient({
                     </Button>
                   )}
                   <Button
+                    className='font-sans'
                     variant='destructive'
                     onClick={() => handleDeleteClick(list.id)}
                   >
@@ -156,20 +163,25 @@ export function ManageListsClient({
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Bekreft sletting</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className='font-sans'>Bekreft sletting</DialogTitle>
+            <DialogDescription className='font-serif'>
               Er du sikker på at du vil slette listen? Denne handlingen er
               permanent
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className='flex flex-col space-y-2'>
             <Button
+              className='font-sans'
               variant='outline'
               onClick={() => setDeleteDialogOpen(false)}
             >
               Avbryt
             </Button>
-            <Button variant='destructive' onClick={handleDeleteConfirm}>
+            <Button
+              className='font-sans'
+              variant='destructive'
+              onClick={handleDeleteConfirm}
+            >
               Slett
             </Button>
           </DialogFooter>

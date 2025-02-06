@@ -17,7 +17,7 @@ export default async function ManageLists() {
 
   return (
     <div className='container mx-auto p-4'>
-      <h1 className='text-2xl font-bold mb-4'>Endre lister</h1>
+      <h1 className='text-2xl font-sans font-bold mb-4'>Endre lister</h1>
       <ManageListsClient lists={lists} session={session} />
     </div>
   );
