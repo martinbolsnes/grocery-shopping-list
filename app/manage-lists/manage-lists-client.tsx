@@ -63,9 +63,10 @@ export function ManageListsClient({
     } catch (error) {
       toast({
         title: 'Feil',
-        description: `En feil skjedde ved oppdatering av listen ${error}`,
+        description: 'En feil skjedde ved oppdatering av listen',
         variant: 'destructive',
       });
+      throw new Error(`Error editing form: ${error}`);
     }
   };
 
@@ -87,9 +88,11 @@ export function ManageListsClient({
       } catch (error) {
         toast({
           title: 'Feil',
-          description: `Klarte ikke slette listen ${error}`,
+          description:
+            'Klarte ikke slette listen. Sjekk at listen er tom før du sletter',
           variant: 'destructive',
         });
+        throw new Error(`Error deleting form: ${error}`);
       }
     }
   };
