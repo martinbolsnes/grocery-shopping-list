@@ -17,6 +17,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { Separator } from '@/components/ui/separator';
+import { ScrollableTabs } from './components/ScrollableTabs';
 
 export default async function Home() {
   const session = await auth();
@@ -64,90 +65,15 @@ export default async function Home() {
   return (
     <main className='flex flex-col container mx-auto p-4'>
       <Suspense fallback={<Skeleton className='h-4 w-[250px]' />}>
-        <div className='flex mb-4 justify-start'>
+        <div className='flex mb-4 justify-between'>
           <CreateListForm />
+          <Link href='/manage-lists'>
+            <Button variant='outline'>Endre lister</Button>
+          </Link>
         </div>
       </Suspense>
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
-        <Tabs defaultValue={lists[0]?.name}>
-          <TabsList>
-            {lists.map((list) => (
-              <TabsTrigger
-                value={list.name}
-                key={list.id}
-                className='font-sans font-bold'
-              >
-                {list.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-          {lists.map((list) => (
-            <TabsContent value={list.name} key={list.id}>
-              <div className='flex items-center justify-between mb-2 mt-4'>
-                <div className='flex items-center space-x-2'>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Avatar className='h-8 w-8'>
-                        <AvatarImage
-                          src={list.owner.image || ''}
-                          alt={list.owner.name || ''}
-                        />
-                        <AvatarFallback>
-                          {list.owner.name?.charAt(0) || 'O'}
-                        </AvatarFallback>
-                      </Avatar>
-                    </PopoverTrigger>
-                    <PopoverContent className='p-1 bg-primary font-serif text-foreground text-center'>
-                      <p>Eier: {list.owner.name || list.owner.email}</p>
-                    </PopoverContent>
-                  </Popover>
-
-                  {list.sharedWith.length > 0 && (
-                    <div className='flex -space-x-2'>
-                      {list.sharedWith.map((user) => (
-                        <Popover key={user.id}>
-                          <PopoverTrigger asChild>
-                            <Avatar className='h-8 w-8 border-2 border-background'>
-                              <AvatarImage
-                                src={user.image || ''}
-                                alt={user.name || ''}
-                              />
-                              <AvatarFallback>
-                                {user.name?.charAt(0) || 'U'}
-                              </AvatarFallback>
-                            </Avatar>
-                          </PopoverTrigger>
-                          <PopoverContent className='p-1 bg-primary font-serif text-foreground text-center'>
-                            <p>Delt med: {user.name || user.email}</p>
-                          </PopoverContent>
-                        </Popover>
-                      ))}
-                    </div>
-                  )}
-                </div>
-                {list.owner.email === session.user?.email && (
-                  <ShareListDialog listId={list.id} />
-                )}
-              </div>
-              <Separator className='mb-8 mt-4' />
-              <Suspense
-                fallback={
-                  <div className='flex flex-col gap-2'>
-                    <Skeleton className='h-4 w-[150px]' />
-                    <Skeleton className='h-4 w-[150px]' />
-                    <Skeleton className='h-4 w-[150px]' />
-                    <Skeleton className='h-4 w-[150px]' />
-                  </div>
-                }
-              >
-                <InteractiveItemList
-                  listId={list.id}
-                  initialItems={list.items}
-                />
-              </Suspense>
-            </TabsContent>
-          ))}
-        </Tabs>
+        <ScrollableTabs lists={lists} session={session} />
       </div>
     </main>
   );
