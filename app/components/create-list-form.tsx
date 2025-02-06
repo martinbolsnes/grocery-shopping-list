@@ -38,7 +38,11 @@ export default function CreateListForm() {
   };
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className='flex'>
+    <form
+      ref={formRef}
+      onSubmit={handleSubmit}
+      className='flex flex-grow max-w-xl'
+    >
       <Input
         type='text'
         name='name'

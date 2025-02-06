@@ -53,18 +53,18 @@ export default async function Home() {
   const lists = await getLists();
 
   return (
-    <main className='flex flex-col container mx-auto p-4'>
+    <main className='flex flex-col container mx-auto p-4 max-w-2xl'>
       <Suspense fallback={<Skeleton className='h-4 w-[250px]' />}>
-        <div className='flex mb-4 justify-between'>
+        <div className='flex mb-4 justify-between space-x-4'>
           <CreateListForm />
           <Link href='/manage-lists'>
             <Button className='font-serif' variant='outline'>
-              Endre lister
+              Dine lister
             </Button>
           </Link>
         </div>
       </Suspense>
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4'>
+      <div className='flex flex-col gap-4 w-full'>
         <ScrollableTabs lists={lists} session={session} />
       </div>
     </main>
